@@ -1,0 +1,14 @@
+{
+  "name": "BBCast",
+  "version": "1.0.0",
+  "dependencies": {
+    "bootstrap": "latest",
+    "animate.css": "latest",
+    "angular": "latest",
+    "jquery": "latest",
+    "jquery-ui": "latest",
+    "lodash": "latest",
+    "gridstack": "latest",
+    "polymer": "Polymer/polymer#^0.5"
+  }
+}

@@ -1,0 +1,266 @@
+<body>
+    <div class="grid-stack">
+	<div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="8" data-gs-height="6">
+    	<div class="grid-stack-item-content" style="background-color:#803533;">
+        	<div id="player"></div>
+		</div>
+	</div>
+	<div class="grid-stack-item" data-gs-x="8" data-gs-y="0" data-gs-width="4" data-gs-height="5">
+    	<div class="grid-stack-item-content" id="image-carousel" style="background-color:#33803b;">
+
+		</div>
+	</div>
+	<div id="image-container" class="grid-stack-item" data-gs-x="0" data-gs-y="6" data-gs-width="8" data-gs-height="2">
+    	<div class="grid-stack-item-content" id="text-carousel" style="background-color:#805c33;">
+		</div>
+	</div>
+	<div class="grid-stack-item" data-gs-x="8" data-gs-y="5" data-gs-width="4" data-gs-height="3">
+    	<div class="grid-stack-item-content" style="background-color:#2b616b;">
+        	<div id="social-carousel">
+                <h1>Social posts stream here</h1>
+                <h1>To see your post Tweet with the hastag #BBCAST</h1>
+              </div>
+		</div>
+	</div>
+</div>
+   <script type="text/javascript">
+        var socket;
+        $(function () {
+        socket = io.connect('http://192.168.1.129:8000/');
+            var options = {
+            };
+            $('.grid-stack').gridstack(options);
+        });
+           $(document).ready(function(){
+            /*
+                $('#image-carousel').slick({
+                    arrows:false,
+                    slidesToShow: 1,
+                    centerMode: 1,
+                    autoplay: true,
+                    autoplaySpeed: 8000
+                });
+              */
+
+
+                 $('#social-carousel').slick({
+                    arrows:false,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 3000
+                });
+            });
+            /*********************************************************************/
+            var textList = [];
+            var text_i = 0;
+            socket.emit('getVideos');
+            socket.emit('getTexts');
+            socket.emit('getImages');
+
+        	socket.on('updatedTextList', function(data){
+                textList = data;
+                getNextText();
+            });
+
+
+            var playText = function(element, duration){
+
+                    var text_to_show = document.createElement('h1');
+                    var text_node = document.createTextNode(element.text);
+                    text_to_show.appendChild(text_node);
+                    var text_player = document.getElementById('text-carousel');
+                    text_player.appendChild(text_to_show);
+                    setTimeout(function(){
+                        text_player.removeChild(text_to_show);
+                        getNextText();
+                    }, duration);
+
+
+
+            };
+
+            var getNextText = function(){
+
+                var text = textList[text_i];
+                var text_duration;
+                if((text.classification === 'exam') || (text.classification === 'quiz')){
+                    text_duration = 10000;
+                } else if ((text.classification === 'homework') || (text.classification === 'seatwork')){
+                    text_duration = 8000;
+                }else {text_duration = 10000;}
+                playText(text, text_duration);
+                if(text_i === textList.length - 1){
+                    text_i = 0;
+                }else{
+                    text_i = text_i + 1;
+                }
+
+            };
+            /*********************************************************************/
+            var imageList = [];
+            var image_i = 0;
+        	socket.on('updatedImageList', function(data){
+                imageList = data;
+                getNextImage();
+            });
+
+            var playImage = function(element, duration){
+
+                var image_to_show = document.createElement('img');
+                image_to_show.setAttribute('src', element.image_url);
+                var image_player = document.getElementById('image-carousel');
+                image_player.appendChild(image_to_show);
+                setTimeout(function(){
+                    image_player.removeChild(image_to_show);
+                    getNextImage();
+                }, duration);
+            };
+            var getNextImage = function(){
+
+                var image = imageList[image_i];
+                var image_duration;
+                if((image.classification === 'exam') || (image.classification === 'quiz')){
+                    image_duration = 10000;
+                } else if ((image.classification === 'homework') || (image.classification === 'seatwork')){
+                    image_duration = 8000;
+                }else {image_duration = 10000;}
+                playImage(image, image_duration);
+                if(image_i === imageList.length - 1){
+                    image_i = 0;
+                }else{
+                    image_i = image_i + 1;
+                }
+
+            };
+            /*********************************************************************/
+
+            var player;
+            var videoList = [];
+            var videoList_iter = 0;
+            var run = 1
+            socket.on('updatedVideoList', function(data){
+              console.log("NEW VIDEO LIST!!!")
+                console.log(data);
+
+                // if(run !=0){
+                //   if(player != null)
+                //   player.destroy();
+                //   player = null;
+                // }
+               videoList = data;
+               if(run ==0){
+               player = new YT.Player('player', {
+                height: '450',
+                width: '835',
+                videoId: videoList[videoList_iter],
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                },
+                playerVars: {
+                    'controls' : 0,
+                }
+
+            });
+            }
+            run++;
+            });
+            var socialPostCtr = 0;
+            socket.on('newSocialPost', function(data){
+               //console.log('post received!');
+               var newId = 'newPost' + socialPostCtr;
+               $('#social-carousel').slick('slickAdd',"<div><h1 id='newPost'></h1></div>");
+               $('#newPost').attr('id', newId);
+               $('#' + newId).text(data.post);
+               socialPostCtr = socialPostCtr + 1;
+            });
+
+            socket.on('updatedImageList', function(data){
+
+            });
+
+
+
+            var imageCtr = 0;
+            socket.on('newImage', function(data){
+
+               var newId = 'newImg' + imageCtr;
+               $('#image-carousel').slick('slickAdd',"<div><img id='newImg'></div>");
+               $('#newImg').attr('id', newId);
+               $('#' + newId).attr('src', data.image_url);
+               imageCtr = imageCtr + 1;
+            });
+            var textCtr = 0;
+            socket.on('newText', function(data){
+               var newId = 'newText' + textCtr;
+               $('#text-carousel').slick('slickAdd',"<div><h1 id='newText'></h1></div>");
+               $('#newText').attr('id', newId);
+               $('#' + newId).text(data.text);
+               textCtr = textCtr + 1;
+            });
+            socket.on('deleteText', function(){
+                $('#text-carousel').slick('slickRemove', textCtr+1);
+            });
+            socket.on('deleteImage', function(){
+                $('#image-carousel').slick('slickRemove', imageCtr+1);
+            });
+
+
+		var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        //var player;
+
+
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            //event.target.loadVideoById(videoList[videoList_iter], 0, "large");
+        }
+        var done = false;
+        function onPlayerStateChange(event) {
+            if(event.data == YT.PlayerState.ENDED) {
+              console.log("VIDEO ENDED!!!")
+                if(videoList_iter === videoList.length - 1){
+                    videoList_iter = 0;
+                }
+                else if(videoList_iter > videoList.length - 1){
+                    videoList_iter = 0;
+                }
+                else {
+                    videoList_iter++;
+                }
+                //if(event.data === 0) { event.target.loadVideoById(videoList[videoList_iter], 0, "large");console.log(videoList_iter);}
+            //       player.destroy();
+            //       player = null;
+             //
+            //     player = new YT.Player('player', {
+            //      height: '450',
+            //      width: '835',
+            //      videoId: videoList[videoList_iter],
+            //      events: {
+            //          'onReady': onPlayerReady,
+            //          'onStateChange': onPlayerStateChange
+            //      },
+            //      playerVars: {
+            //          'controls' : 0,
+            //      }
+            //  });
+            player.loadVideoById(videoList[videoList_iter], 0, "large");
+            console.log(videoList_iter);
+            }
+        }
+        // function stopVideo() {
+        //     player.stopVideo();
+        // }
+
+        socket.on('newVideo', function(data){
+               //player.loadVideoById(data.video_id, 0, "large");
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<body>
+
+        <div class="grid-stack">
+            <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="9" data-gs-height="8">
+                <div class="grid-stack-item-content">
+                    <div id="player"></div>
+
+                </div>
+            </div>
+            <div class="grid-stack-item" data-gs-x="9" data-gs-y="0" data-gs-width="3" data-gs-height="8">
+                <div class="grid-stack-item-content" id="messages">
+
+                </div>
+            </div>
+    </div>
+
+
+    <script type="text/javascript">
+    var socket;
+    $(function () {
+    socket = io.connect('http://192.168.100.2:8000/');
+        var options = {
+        };
+        $('.grid-stack').gridstack(options);
+    });
+       $(document).ready(function(){
+
+            $('#image-carousel').slick({
+                arrows:false,
+                slidesToShow: 1,
+                centerMode: 1,
+                autoplay: true,
+                autoplaySpeed: 2000
+            });
+
+
+
+             $('#social-carousel').slick({
+                arrows:false,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 8000
+            });
+        });
+
+
+
+
+    var socialPostCtr = 0;
+    socket.on('newSocialPost', function(data){
+       //console.log('post received!');
+       var newId = 'newPost' + socialPostCtr;
+       $('#social-carousel').slick('slickAdd',"<div><h1 id='newPost'></h1></div>");
+       $('#newPost').attr('id', newId);
+       $('#' + newId).text(data.post);
+       socialPostCtr = socialPostCtr + 1;
+    });
+
+    </script>
+</body>
+</html>

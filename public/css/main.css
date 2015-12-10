@@ -1,0 +1,54 @@
+body {
+	background: #424242;
+}
+.grid-stack-item-content {
+ 	color: #e9e9e9;
+	text-align: center;
+
+}
+.img-circular{
+ width: 100px;
+ height: 100px;
+ margin: 0 auto;
+ background-size: cover;
+ display: block;
+ border-radius: 50px;
+ -webkit-border-radius: 50px;
+ -moz-border-radius: 50px;
+}
+.grid-stack-item {
+	background: #424242
+}
+nav {
+	background:#2196f3;
+}
+#project-name {
+	color:#e9e9e9;
+}
+#clock {
+	color:#e9e9e9;
+}
+#welcome {
+	border: 4px solid #e9e9e9;
+}
+
+#weather-desc {
+	color:#e9e9e9;
+}
+
+#separator-pipe {
+	color:#e9e9e9;
+}
+
+#welcome-message, #welcome-icon, #welcome-greeting {
+	color: #e9e9e9;
+}
+.navbar {
+	background: #2196f3;
+}
+.marquee{
+	color: #0fa9f9;
+}
+.footer{
+	background:#303030;
+}
