@@ -4,22 +4,24 @@ var express = require("express"),
     mongoose = require('mongoose'),
     bodyParser = require('body-parser'),
     Twit = require('twit'),
-    FB = require('fb'),
+    //FB = require('fb'),
     io = require("socket.io")(http),
     request = require('request'),
-    IG = require('instagram-node-lib'),
+    //IG = require('instagram-node-lib'),
     ContextIO = require('contextio');
+
+var Tweet = require('./app/models/tweet')
 
 //var ec = require('./expiryChecker');
 var daily = require('./dailyAgenda');
 var qm = require('./queueManager')(io);
 var config = require('./config');
 
-IG.set('client_id', '086b493264514b5cb82d65d7f4859663');
-IG.set('client_secret', 'f7a1201df84d4704a6d83578c7601c4f');
+// IG.set('client_id', '086b493264514b5cb82d65d7f4859663');
+// IG.set('client_secret', 'f7a1201df84d4704a6d83578c7601c4f');
 
 var port = process.env.PORT || 8000;
-mongoose.connect('mongodb://localhost/UCL-BBCast');
+mongoose.connect('mongodb://localhost/lantern');
 //use express framework
 var app = express();
 
@@ -66,31 +68,77 @@ var T = new Twit({
   access_token_secret: 'HhuM4iMSA3wg9xKbyUmellUEdO94ySA3aAEOvoMQ0C6Nl'
 });
 
+var Tw = new Twit({
+  consumer_key: '4mrTUMM6FKdJGFWqwXajCF0XB',
+  consumer_secret: 'zfvWmfBup4iXSkjB95vR2LzXBdoqRB7Bxa6Oz8ofD93rjcXrpL',
+  access_token: '2181879318-etW6hcVB1MYGnla54JpzbPJUvHs0CymNa6SxGXh',
+  access_token_secret: 'HhuM4iMSA3wg9xKbyUmellUEdO94ySA3aAEOvoMQ0C6Nl'
+});
+
 //var watchList = ['1968194946', '816653', '168664036', '771319', '2181879318'];
-var watchList = ['#BBCAST'];
+var watchList = ['269297065'];
 //var tStream = T.stream('statuses/filter', { follow: watchList});
 
-var tStream = T.stream('statuses/filter',{ track: '#WorstResponders'});
+
+
+var tStream = T.stream('statuses/filter',{ track: '#lantern2015'});
 tStream.on('tweet',function(tweet){
-   console.log(tweet.text);
-   io.sockets.emit('newSocialPost', {'post' : tweet});
+   console.log(tweet);
+
+
+   var nt = Tweet({
+     username        :       tweet.user.name,
+     time_in         :       new Date(),
+     user_photo      :       tweet.user.profile_image_url,
+     tweet_text      :       tweet.text,
+   });
+
+   if ("media" in tweet.entities) {
+     nt.tweet_img = tweet.entities.media[0].media_url
+     console.log("with image!");
+     io.sockets.emit('tweet_with_image', {'post' : tweet});
+   } else {
+    console.log("without image!");
+     io.sockets.emit('tweet_without_image', {'post' : tweet});
+   }
+  nt.save(function(err){
+    if (err) throw err;
+    console.log(err);
+  });
 });
 
-IG.subscriptions.subscribe({
-   object: 'tag',
-   object_id: 'eeeannouncement',
-   aspect: 'media',
-   callback_url: 'https://fojpjrybjz.localtunnel.me/igpost',
-   type: 'subscription',
-   id: '#'
+var tweet_count = 0;
+
+Tweet.count({}, function( err, count){
+    console.log( "Number of tweets:", count );
+    tweet_count = count;
 });
-/*
-request('https://graph.facebook.com/ucl.bbcast/feed?access_token=824373247647109|794f702c33aa1dbf0305d81a0d8e48b8', function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-        var bodyObj = JSON.parse(body);
-        console.log(bodyObj.data[0].message);
-    } else{
-        console.log(error);
-    }
+
+
+//
+
+var tStream_follow = Tw.stream('statuses/filter',{ follow: watchList});
+tStream_follow.on('tweet',function(tweet){
+   console.log(tweet);
+
+
+   var nt = Tweet({
+     username        :       tweet.user.name,
+     time_in         :       new Date(),
+     user_photo      :       tweet.user.profile_image_url,
+     tweet_text      :       tweet.text,
+   });
+
+   if ("media" in tweet.entities) {
+     nt.tweet_img = tweet.entities.media[0].media_url
+     console.log("with image!");
+     io.sockets.emit('tweet_with_image_follow', {'post' : tweet});
+   } else {
+    console.log("without image!");
+     io.sockets.emit('tweet_without_image_follow', {'post' : tweet});
+   }
+  nt.save(function(err){
+    if (err) throw err;
+    console.log(err);
+  });
 });
-*/

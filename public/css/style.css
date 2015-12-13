@@ -1,0 +1,123 @@
+body {
+  color: orange;
+  background-color: #3e3e3e;
+}
+.container{
+
+    padding-bottom: 140px;
+}
+.popover-example {
+  margin: 0 0 10px;
+  list-style: none;
+}
+.popover-example li{
+  display: inline-block;
+  margin: 4px;
+  padding: 0px;
+}
+.btn:focus{
+  outline: none;
+}
+.modExample .btn{
+    margin: 4px 8px 4px 0;
+}
+
+.tweet_img {
+  display: block;
+  margin: 0 auto;
+  max-width: 800px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+
+}
+.tweet_img2 {
+  display: block;
+  margin: 0 auto;
+  max-width: 800px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+
+}
+
+.user {
+  text-align: left;
+  color: black;
+}
+
+.tweet_text {
+  text-align: left;
+  color: black;
+}
+.user2 {
+  text-align: left;
+  color: black;
+}
+
+.tweet_text2 {
+  text-align: left;
+  color: black;
+}
+.modal-title {
+  text-align: center;
+  color: white;
+}
+
+.modal-body {
+  background-color: white;
+}
+
+.modal-header {
+  background-color: white;
+}
+
+.modal-footer {
+  background-color: white;
+}
+
+.user_img {
+  display: block;
+  height: 60px;
+  width: 60px;
+  border-radius: 50px;
+}
+.user_img2 {
+  display: block;
+  height: 60px;
+  width: 60px;
+  border-radius: 50px;
+}
+
+#myModal5 .modal-dialog  {width:60%;}
+
+.user_photo_div {
+  position: relative;
+  /*border: 3px solid #73AD21;*/
+}
+
+.user_name_div {
+  position: absolute;
+  /*border: 3px solid #73AD21;*/
+  top: 15px;
+  left: 80px;
+
+}
+.body-text {
+  position: absolute;
+  /*border: 3px solid #73AD21;*/
+  top: 75px;
+  left: 75px;
+
+}
+.body-text2 {
+  position: absolute;
+  /*border: 3px solid #73AD21;*/
+  top: 75px;
+  left: 75px;
+
+}
+
+.modal-header {
+  height: 200px;
+}

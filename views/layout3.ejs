@@ -3,8 +3,14 @@
 		<div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-height="8">
 	    	<div class="grid-stack-item-content" style="background-color:#2196f3;">
           <div id="social-carousel">
-                <h1>Please tweet a picture or message</h1>
-                <h1>To see your post Tweet with the hastag #lantern2015</h1>
+                <div>
+                  <h1 id='newPost'>
+                  </h1>
+                  <img id='newImg' src='' alt='See your picture here' style='width:640px;height:360px;'><br>
+                  <div id ='newProfile' class='img-circular'>
+                  </div><p id='newUser'>
+                  </p>
+                </div>
               </div>
 			</div>
 		</div>
@@ -29,39 +35,49 @@
         */
 
 
-           $('#social-carousel').slick({
-              arrows:false,
-              slidesToShow: 1,
-              slidesToScroll: 1,
-              autoplay: true,
-              autoplaySpeed: 3000
-          });
+          //  $('#social-carousel').slick({
+          //     arrows:false,
+          //     slidesToShow: 1,
+          //     slidesToScroll: 1,
+          //     autoplay: true,
+          //     autoplaySpeed: 3000
+          // });
       });
       var socialPostCtr = 0;
        socket.on('newSocialPost', function(data){
           //console.log('post received!');
          // tweet.entities.media[0].media_url, tweet.user.name, tweet.user.profile_image_url
+         console.log(data);
           var newId = 'newPost' + socialPostCtr;
           var newId1 = 'newImg' + socialPostCtr;
           var newId2 = 'newProfile' + socialPostCtr;
           var newId3 = 'newUser' + socialPostCtr;
-          $('#social-carousel').slick('slickAdd',"<div><h1 id='newPost'></h1><img id='newImg' src='' alt='See your picture here' style='width:640px;height:360px;'><br><div id ='newProfile' class='img-circular'></div><p id='newUser'></p></div>");
-          //tweet
-          $('#newPost').attr('id', newId);
-          $('#' + newId).text(data.post.text);
-          //image
-          $('#newImg').attr('id', newId1);
-          $('#' + newId1).attr("src",data.post.entities.media[0].media_url);
-          //profile pic
-          $('#newProfile').attr('id', newId2);
-          $('#' + newId2).css("background-image", "url("+data.post.user.profile_image_url+")");
-          //$('#' + newId2).attr("src",data.post.user.profile_image_url);
-          //$('#divID').css("background-image", "url(/myimage.jpg)");
-          //username
-          $('#newUser').attr('id', newId3);
-          $('#' + newId3).text('@'+data.post.user.name);
+          // $('#social-carousel').slick('slickAdd',"<div><h1 id='newPost'></h1><img id='newImg' src='' alt='See your picture here' style='width:640px;height:360px;'><br><div id ='newProfile' class='img-circular'></div><p id='newUser'></p></div>");
+          // //tweet
+          // $('#newPost').attr('id', newId);
+          // $('#' + newId).text(data.post.text);
+          // //image
+          //
+          // //profile pic
+          // $('#newProfile').attr('id', newId2);
+          // $('#' + newId2).css("background-image", "url("+data.post.user.profile_image_url+")");
+          // //$('#' + newId2).attr("src",data.post.user.profile_image_url);
+          // //$('#divID').css("background-image", "url(/myimage.jpg)");
+          // //username
+          // $('#newUser').attr('id', newId3);
+          // $('#' + newId3).text('@'+data.post.user.name);
+          // $('#newImg').attr('id', newId1);
+          // $('#' + newId1).attr("src",data.post.entities.media[0].media_url);
+          //
+          // socialPostCtr = socialPostCtr + 1;
+          $('#newPost').text(data.post.text);
+          $('#newProfile').css("background-image", "url("+data.post.user.profile_image_url+")");
+          $('#newUser').text('@'+data.post.user.name);
 
-          socialPostCtr = socialPostCtr + 1;
+          if("media" in data.post.entities){
+            $('#newImg').attr("src",data.post.entities.media[0].media_url);
+          }
+          else $('#newImg').remove();
        });
 	</script>
 
